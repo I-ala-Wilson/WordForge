@@ -694,10 +694,10 @@
           </div>
         </div>
         <div class="stats-grid">
-          <div class="stat-card"><span class="stat-value" id="stat-new">0</span><span class="stat-label">New</span></div>
-          <div class="stat-card"><span class="stat-value" id="stat-learning">0</span><span class="stat-label">Learning</span></div>
-          <div class="stat-card"><span class="stat-value" id="stat-known">0</span><span class="stat-label">Known</span></div>
-          <div class="stat-card"><span class="stat-value" id="stat-due">0</span><span class="stat-label">Due Today</span></div>
+          <div class="stat-card" data-goto-status="new" style="cursor:pointer"><span class="stat-value" id="stat-new">0</span><span class="stat-label">New</span></div>
+          <div class="stat-card" data-goto-status="learning" style="cursor:pointer"><span class="stat-value" id="stat-learning">0</span><span class="stat-label">Learning</span></div>
+          <div class="stat-card" data-goto-status="known" style="cursor:pointer"><span class="stat-value" id="stat-known">0</span><span class="stat-label">Known</span></div>
+          <div class="stat-card" data-goto-status="all" style="cursor:pointer"><span class="stat-value" id="stat-due">0</span><span class="stat-label">Due Today</span></div>
         </div>
         <div class="dash-actions">
           <button class="btn btn-primary btn-lg" id="btn-review">Review Due Words <span class="badge" id="badge-due">0</span></button>
@@ -1153,12 +1153,27 @@
     const savedNewPerDay = Store.get('newPerDay', 10);
     $('#setting-new-per-day').value = savedNewPerDay;
 
+    // Stat cards navigate to browse with that status filter
+    $$('.stat-card[data-goto-status]').forEach(card => {
+      card.addEventListener('click', () => {
+        const status = card.dataset.gotoStatus;
+        Browse.statusFilter = status;
+        // Update filter chips to reflect
+        $$('#status-filters .filter-chip').forEach(c => c.classList.toggle('active', c.dataset.status === status));
+        navigate('browse');
+      });
+    });
+
+    // Reset requires typing "RESET" to confirm — prevents accidental wipes
     $('#btn-reset').addEventListener('click', () => {
-      if (confirm('Reset all progress? This cannot be undone.')) {
-        SR.data = {};
-        SR.save();
-        Store.set('streak', { current: 0, last: '' });
-        renderDashboard();
+      const input = prompt('This will permanently erase all your progress.\n\nType RESET to confirm:');
+      if (input && input.trim() === 'RESET') {
+        if (confirm('Are you absolutely sure? All progress will be lost forever.')) {
+          SR.data = {};
+          SR.save();
+          Store.set('streak', { current: 0, last: '' });
+          renderDashboard();
+        }
       }
     });
 
