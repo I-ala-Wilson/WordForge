@@ -1,0 +1,5 @@
+.DS_Store
+missing_words.txt
+words_part*.js
+docs/research/
+node_modules/
