@@ -1,4 +1,4 @@
-const CACHE_NAME = 'wordforge-v3';
+const CACHE_NAME = 'wordforge-v4';
 const ASSETS = ['./index.html', './words.js', './manifest.json'];
 
 self.addEventListener('install', (e) => {
